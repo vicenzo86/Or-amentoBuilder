@@ -35,7 +35,7 @@ const QuotePreview: React.FC<QuotePreviewProps> = ({ data }) => {
       <div className="break-inside-avoid mb-6">
         <div className="flex justify-between items-start">
             {/* Left - Client Address Scope */}
-            <div className="w-1/2 pt-4">
+            <div className="w-1/2">
                 <div className="font-bold text-sm mb-1">À</div>
                 <div className="font-bold text-base mb-1">{data.client.name}</div>
                 <div>{data.client.contact}</div>
@@ -54,12 +54,12 @@ const QuotePreview: React.FC<QuotePreviewProps> = ({ data }) => {
             {/* Right - Company Info */}
             <div className="w-1/2 text-right flex flex-col items-end">
                 {data.company.logoUrl ? (
-                    <img src={data.company.logoUrl} alt="Logo" className="h-32 w-auto object-contain mb-2"/>
+                    <img src={data.company.logoUrl} alt="Logo" className="h-20 w-auto object-contain mb-1 object-right"/>
                 ) : (
                     <h1 className="text-3xl font-bold text-blue-800 italic mb-4">{data.company.name}</h1>
                 )}
                 
-                <div className="text-xs text-gray-700 mt-2">
+                <div className="text-xs text-gray-700 mt-0">
                     <div className="font-bold">{data.company.name}</div>
                     <div>{data.company.address}</div>
                     <div>Tel.: {data.company.phone}</div>
