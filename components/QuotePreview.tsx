@@ -54,7 +54,7 @@ const QuotePreview: React.FC<QuotePreviewProps> = ({ data }) => {
             {/* Right - Company Info */}
             <div className="w-1/2 text-right flex flex-col items-end">
                 {data.company.logoUrl ? (
-                    <img src={data.company.logoUrl} alt="Logo" className="h-20 w-auto object-contain mb-1 object-right"/>
+                    <img src={data.company.logoUrl} alt="Logo" className="h-32 w-auto object-contain mb-1 object-right"/>
                 ) : (
                     <h1 className="text-3xl font-bold text-blue-800 italic mb-4">{data.company.name}</h1>
                 )}
