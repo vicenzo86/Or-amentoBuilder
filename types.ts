@@ -11,12 +11,19 @@ export interface QuoteItem {
   kits: number;
 }
 
+export interface QuoteSupplemental {
+  id: string;
+  description: string; // e.g., "DIFAL", "ST", "Frete Extra"
+  value: number;
+}
+
 export interface QuoteSection {
   id: string;
   title: string; // e.g. "Área 1"
   areaSize: number; // e.g. 4950.00
   description: string; // e.g. "de endurecedor de superfície..."
   items: QuoteItem[];
+  supplemental: QuoteSupplemental[];
 }
 
 export interface ClientData {
@@ -102,7 +109,8 @@ export const initialQuoteData: QuoteData = {
           icms: 17,
           kits: 3
         }
-      ]
+      ],
+      supplemental: []
     },
     {
         id: '2',
@@ -121,7 +129,8 @@ export const initialQuoteData: QuoteData = {
             icms: 17,
             kits: 2
           }
-        ]
+        ],
+        supplemental: []
       }
   ],
   conditions: {

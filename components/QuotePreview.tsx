@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { QuoteData, QuoteItem, QuoteSection } from '../types';
 
@@ -22,12 +23,18 @@ const QuotePreview: React.FC<QuotePreviewProps> = ({ data }) => {
       return baseTotal + ipiTotal;
   };
 
-  const calculateSectionTotal = (section: QuoteSection) => {
+  const calculateSectionItemsTotal = (section: QuoteSection) => {
     return section.items.reduce((acc, item) => acc + calculateItemTotal(item), 0);
+  };
+  
+  const calculateSectionSupplementalTotal = (section: QuoteSection) => {
+      return (section.supplemental || []).reduce((acc, sup) => acc + sup.value, 0);
   };
 
   const calculateGrandTotal = () => {
-    return data.sections.reduce((acc, section) => acc + calculateSectionTotal(section), 0);
+    return data.sections.reduce((acc, section) => {
+        return acc + calculateSectionItemsTotal(section) + calculateSectionSupplementalTotal(section);
+    }, 0);
   };
 
   return (
@@ -78,7 +85,7 @@ const QuotePreview: React.FC<QuotePreviewProps> = ({ data }) => {
 
       {/* SECTIONS LOOP */}
       {data.sections.map((section) => {
-          const sectionTotal = calculateSectionTotal(section);
+          const sectionTotal = calculateSectionItemsTotal(section);
           const totalPerSqm = section.areaSize > 0 ? sectionTotal / section.areaSize : 0;
 
           return (
@@ -139,10 +146,21 @@ const QuotePreview: React.FC<QuotePreviewProps> = ({ data }) => {
                     <span className="font-bold">Total do item</span>
                     <span className="font-bold">{formatCurrency(sectionTotal)}</span>
                 </div>
-                <div className="border border-t-0 border-black flex justify-between items-center px-2 py-1 mb-2">
+                <div className="border border-t-0 border-black flex justify-between items-center px-2 py-1">
                     <span className="font-bold">Total do item por m²</span>
                     <span className="font-bold">{formatCurrency(totalPerSqm)}</span>
                 </div>
+                
+                {/* Supplemental Fields (DIFAL, ST, Frete, etc) */}
+                {(section.supplemental || []).map((sup) => (
+                    <div key={sup.id} className="border border-t-0 border-black flex justify-between items-center px-2 py-1">
+                        <span className="font-bold">{sup.description}</span>
+                        <span className="font-bold">{formatCurrency(sup.value)}</span>
+                    </div>
+                ))}
+
+                {/* Bottom Spacer for visually separating from next block */}
+                <div className="mb-2"></div>
             </div>
           );
       })}

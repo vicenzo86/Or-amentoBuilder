@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { QuoteData, QuoteItem, QuoteSection, SupplyConditions } from '../types';
-import { Plus, Trash2, Layers, FolderPlus, Wand2, Loader2 } from 'lucide-react';
+import { QuoteData, QuoteItem, QuoteSection, SupplyConditions, QuoteSupplemental } from '../types';
+import { Plus, Trash2, Layers, FolderPlus, Wand2, Loader2, Coins } from 'lucide-react';
 import { suggestDescription } from '../services/geminiService';
 
 interface QuoteFormProps {
@@ -28,7 +28,8 @@ const QuoteForm: React.FC<QuoteFormProps> = ({ data, onChange }) => {
         title: `Área ${data.sections.length + 1}`,
         areaSize: 0,
         description: "Descrição da área...",
-        items: []
+        items: [],
+        supplemental: []
     };
     onChange({ ...data, sections: [...data.sections, newSection] });
   };
@@ -116,6 +117,56 @@ const QuoteForm: React.FC<QuoteFormProps> = ({ data, onChange }) => {
       const suggested = await suggestDescription('material', currentVal);
       updateItem(sectionId, itemId, 'description', suggested);
       setLoadingSuggestion(null);
+    };
+
+    // -- Supplemental Fields Management --
+
+    const addSupplementalToSection = (sectionId: string) => {
+        const newSup: QuoteSupplemental = {
+            id: Math.random().toString(36).substr(2, 9),
+            description: "DIFAL / ST / Frete",
+            value: 0
+        };
+
+        onChange({
+            ...data,
+            sections: data.sections.map(s => {
+                if (s.id === sectionId) {
+                    return { ...s, supplemental: [...(s.supplemental || []), newSup] };
+                }
+                return s;
+            })
+        });
+    };
+
+    const updateSupplemental = (sectionId: string, supId: string, field: keyof QuoteSupplemental, value: string | number) => {
+         onChange({
+            ...data,
+            sections: data.sections.map(s => {
+                if (s.id === sectionId) {
+                    return {
+                        ...s,
+                        supplemental: (s.supplemental || []).map(sup => sup.id === supId ? { ...sup, [field]: value } : sup)
+                    };
+                }
+                return s;
+            })
+        });
+    };
+
+    const removeSupplemental = (sectionId: string, supId: string) => {
+        onChange({
+            ...data,
+            sections: data.sections.map(s => {
+                if (s.id === sectionId) {
+                    return {
+                        ...s,
+                        supplemental: (s.supplemental || []).filter(sup => sup.id !== supId)
+                    };
+                }
+                return s;
+            })
+        });
     };
 
   return (
@@ -246,7 +297,7 @@ const QuoteForm: React.FC<QuoteFormProps> = ({ data, onChange }) => {
 
             {/* Materials Table */}
             <div>
-                <div className="space-y-4">
+                <div className="space-y-4 mb-4">
                 {section.items.map((item) => (
                     <div key={item.id} className="bg-gray-50 p-3 rounded-md border border-gray-200 relative group">
                          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -359,6 +410,43 @@ const QuoteForm: React.FC<QuoteFormProps> = ({ data, onChange }) => {
                 >
                     <Plus size={14} /> Adicionar Produto
                 </button>
+                </div>
+
+                {/* Supplementary Fields */}
+                <div className="mt-6 border-t pt-4">
+                    <label className="text-xs font-bold text-gray-700 flex items-center gap-2 mb-2">
+                        <Coins size={14} />
+                        Custos Adicionais / Informações Extras (DIFAL, ST, Frete, etc.)
+                    </label>
+                    <div className="space-y-2">
+                        {(section.supplemental || []).map(sup => (
+                            <div key={sup.id} className="flex gap-2 items-center">
+                                <input 
+                                    type="text"
+                                    placeholder="Descrição (ex: DIFAL, ST, Frete)"
+                                    value={sup.description}
+                                    onChange={(e) => updateSupplemental(section.id, sup.id, 'description', e.target.value)}
+                                    className="flex-grow border-gray-300 rounded-md text-xs p-1.5 border"
+                                />
+                                <input 
+                                    type="number"
+                                    placeholder="Valor (R$)"
+                                    value={sup.value}
+                                    onChange={(e) => updateSupplemental(section.id, sup.id, 'value', parseFloat(e.target.value) || 0)}
+                                    className="w-32 border-gray-300 rounded-md text-xs p-1.5 border text-right"
+                                />
+                                <button onClick={() => removeSupplemental(section.id, sup.id)} className="text-red-400 hover:text-red-600 p-1">
+                                    <Trash2 size={14} />
+                                </button>
+                            </div>
+                        ))}
+                         <button 
+                            onClick={() => addSupplementalToSection(section.id)}
+                            className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1 font-medium mt-1"
+                        >
+                            <Plus size={12} /> Adicionar Campo Extra
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
