@@ -54,8 +54,8 @@ const QuotePreview: React.FC<QuotePreviewProps> = ({ data }) => {
             <tr>
                 <td>
                     {/* TOP MARGIN SPACER - Repeats on every page */}
-                    {/* 10mm is small but safe, satisfying "subir o maximo possivel" while keeping space on page 2 */}
-                    <div className="h-[10mm] print:h-[10mm]"></div> 
+                    {/* Exact 15mm spacing from top of sheet for Page 1 and Page 2+ */}
+                    <div className="h-[15mm] print:h-[15mm]"></div> 
                 </td>
             </tr>
         </thead>
